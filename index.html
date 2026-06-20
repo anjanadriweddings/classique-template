@@ -129,6 +129,9 @@ const WEDDING = {
   rsvp: {
     maxGuestOptions: ["Just me", "2 guests", "3 guests", "4 guests", "5 or more"],
     dietOptions:     ["No restrictions", "Vegetarian", "Vegan", "Jain Vegetarian", "Halal", "Gluten-free"],
+    /* Paste your Google Apps Script Web App URL here (see setup guide).   */
+    /* Leave as null until you've completed the Google Sheets setup steps. */
+    googleSheetUrl: null,
     formspreeEndpoint: null
   },
 
@@ -165,43 +168,48 @@ const WEDDING = {
   body { font-family:var(--ff-b); background:var(--ivory); color:var(--ink); overflow-x:hidden; }
 
   /* ═══════════════════════════════════════════════════
-     NAV — FIXED: visible on scroll + working hamburger
+     NAV — rebuilt with explicit states, no ambiguity
      ═══════════════════════════════════════════════════ */
   nav {
-    position:fixed; top:0; left:0; right:0; z-index:200;
-    padding:20px 40px;
+    position:fixed; top:0; left:0; right:0; z-index:300;
+    padding:18px 40px;
     display:flex; justify-content:space-between; align-items:center;
     transition:background 0.4s var(--ease), box-shadow 0.4s var(--ease), padding 0.4s var(--ease);
     background: transparent;
   }
 
-  /* Scrolled state — ivory glass background with dark text */
+  /* Scrolled state — solid ivory background, ALWAYS dark text inside it */
   nav.scrolled {
-    background: rgba(253,250,243,0.97);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 2px 24px rgba(0,0,0,0.12);
+    background: #FDFAF3;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.15);
     padding: 12px 40px;
   }
 
   .nav-logo {
     font-family:var(--ff-d); font-size:12px; letter-spacing:0.3em;
     color:var(--gold); text-decoration:none; text-transform:uppercase;
-    position:relative; z-index:211;
+    position:relative; z-index:301;
+    white-space:nowrap;
   }
 
-  .nav-links { display:flex; gap:40px; list-style:none; }
+  .nav-links {
+    display:flex; gap:32px; list-style:none;
+    align-items:center;
+  }
 
   .nav-links a {
-    font-family:var(--ff-d); font-size:11px; letter-spacing:0.2em;
+    font-family:var(--ff-d); font-size:11px; letter-spacing:0.18em;
     text-transform:uppercase; text-decoration:none;
     position:relative; transition:color 0.3s var(--ease);
-    /* Default: hero is dark, so links are light */
-    color: rgba(255,255,255,0.9);
+    color: #FFFFFF;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
 
-  /* On scroll: dark text on light nav */
-  nav.scrolled .nav-links a { color: var(--ink-soft); }
+  /* Scrolled = light background, so force dark text — highest specificity */
+  nav.scrolled .nav-links a {
+    color: #4A3B1F;
+    text-shadow: none;
+  }
 
   .nav-links a::after {
     content:''; position:absolute; bottom:-5px; left:0;
@@ -211,33 +219,29 @@ const WEDDING = {
   .nav-links a:hover { color: var(--gold) !important; }
   .nav-links a:hover::after { width:100%; }
 
-  /* Hamburger button */
+  /* Hamburger button — hidden by default (desktop) */
   .nav-burger {
-    display:none; flex-direction:column; justify-content:center;
-    gap:6px; cursor:pointer; z-index:211;
-    width:32px; height:32px; padding:4px;
-    background:none; border:none;
+    display:none;
+    flex-direction:column; justify-content:center; align-items:center;
+    gap:5px; cursor:pointer; z-index:301;
+    width:36px; height:36px;
+    background:rgba(0,0,0,0.15);
+    border:1px solid rgba(212,175,55,0.5);
+    border-radius:4px;
+    padding:0;
+  }
+  nav.scrolled .nav-burger {
+    background:rgba(212,175,55,0.1);
   }
   .nav-burger span {
-    display:block; width:22px; height:2px;
+    display:block; width:18px; height:2px;
     background:var(--gold);
-    transition:transform 0.35s var(--ease), opacity 0.25s;
+    transition:transform 0.3s var(--ease), opacity 0.2s;
     transform-origin:center;
   }
-  /* X state */
-  .nav-burger.open span:nth-child(1) { transform:translateY(8px) rotate(45deg); }
-  .nav-burger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
-  .nav-burger.open span:nth-child(3) { transform:translateY(-8px) rotate(-45deg); }
-
-  /* Mobile fullscreen menu */
-  .nav-links.open {
-    display:flex !important;
-    animation: menuIn 0.35s var(--ease);
-  }
-  @keyframes menuIn {
-    from { opacity:0; transform:translateY(-12px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
+  .nav-burger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .nav-burger.open span:nth-child(2) { opacity:0; }
+  .nav-burger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
 
   /* HERO */
   #hero { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--ink); position:relative; overflow:hidden; }
@@ -379,6 +383,75 @@ const WEDDING = {
   .map-fallback { width:100%; padding:60px 24px; text-align:center; background:var(--ivory-2); border:2px solid var(--border); font-family:var(--ff-a); font-style:italic; color:var(--ink-muted); line-height:1.8; }
   .map-fallback a { color:var(--gold-dark); text-decoration:underline; }
 
+  /* ═══════════════════════════════════════════════════
+     BUSINESS CONTACT BANNER (Anjanadri Weddings)
+     Sticky to bottom of viewport, couple names shown above
+     ═══════════════════════════════════════════════════ */
+  #biz-banner {
+    position: sticky;
+    bottom: 0;
+    left: 0; right: 0;
+    z-index: 150;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    padding: 18px 24px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.18);
+  }
+  #biz-banner::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .biz-inner {
+    max-width: 720px; margin: 0 auto;
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .biz-couple {
+    font-family: var(--ff-d); font-size: 12px; letter-spacing: .15em;
+    text-transform: uppercase; color: rgba(26,18,8,0.55);
+  }
+  .biz-couple b { color: var(--ink); font-weight: 700; }
+  .biz-label {
+    font-family: var(--ff-d); font-size: 10px; letter-spacing: .3em;
+    text-transform: uppercase; color: rgba(26,18,8,0.65);
+  }
+  .biz-name {
+    font-family: var(--ff-d); font-size: clamp(17px,2.6vw,22px);
+    letter-spacing: .08em; color: var(--ink); font-weight:600;
+  }
+  .biz-sub {
+    font-family: var(--ff-a); font-style: italic; font-size: 14px;
+    color: rgba(26,18,8,0.75); max-width: 480px; line-height: 1.6;
+  }
+  .biz-cta {
+    display: inline-flex; align-items: center; gap: 9px;
+    margin-top: 4px;
+    background: var(--ink); color: #25D366;
+    padding: 12px 26px;
+    border-radius: 28px;
+    text-decoration: none;
+    font-family: var(--ff-d); font-size: 11.5px; letter-spacing: .14em;
+    text-transform: uppercase; font-weight: 600;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    white-space: nowrap;
+  }
+  .biz-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.32);
+  }
+  .biz-cta svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  @media(max-width:600px){
+    #biz-banner { padding: 14px 16px; }
+    .biz-couple { font-size: 10px; }
+    .biz-sub { font-size: 12.5px; }
+    .biz-cta { padding: 10px 20px; font-size: 10.5px; }
+  }
+
   /* FOOTER */
   footer { background:linear-gradient(160deg,var(--ink),#2d1f06); padding:72px 24px 44px; text-align:center; position:relative; overflow:hidden; }
   footer::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 0%,rgba(212,175,55,.08) 0%,transparent 60%); pointer-events:none; }
@@ -400,24 +473,38 @@ const WEDDING = {
   /* ═══════════════════════════════
      RESPONSIVE
      ═══════════════════════════════ */
-  @media(max-width:900px){
+  /* ═══════════════════════════════════════════════════
+     RESPONSIVE — tablet breakpoint widened to catch iPads
+     ═══════════════════════════════════════════════════ */
+  @media(max-width:1024px){
     nav { padding:14px 20px; }
     nav.scrolled { padding:12px 20px; }
 
-    /* Hide desktop links, show burger */
+    .nav-logo { font-size:11px; }
+
+    /* Hide desktop inline links */
     .nav-links {
       display:none;
-      position:fixed; inset:0;
+      position:fixed;
+      top:0; left:0; right:0; bottom:0;
       flex-direction:column;
-      background:rgba(26,18,8,0.98);
-      backdrop-filter:blur(20px);
+      background:#1A1208;
       align-items:center; justify-content:center;
-      gap:36px; z-index:199;
+      gap:36px; z-index:250;
     }
-    .nav-links.open { display:flex; }
-    .nav-links a { color:var(--gold-pale) !important; font-size:16px; letter-spacing:.25em; }
+    /* Explicit open state — JS adds this class */
+    .nav-links.open {
+      display:flex;
+    }
+    .nav-links a {
+      color:#F5E9C8 !important;
+      text-shadow:none;
+      font-size:17px;
+      letter-spacing:.25em;
+    }
     .nav-links a:hover { color:var(--gold) !important; }
 
+    /* Show hamburger */
     .nav-burger { display:flex; }
 
     section { padding:64px 18px; }
@@ -437,7 +524,7 @@ const WEDDING = {
     .map-frame { height:360px; }
   }
 
-  @media(max-width:560px){
+  @media(max-width:600px){
     .gal-grid { grid-template-columns:1fr; grid-template-rows:auto; }
     .gal-item { height:210px; }
     .gal-item:first-child { grid-column:1; grid-row:auto; }
@@ -594,6 +681,20 @@ const WEDDING = {
   </div>
 </section>
 
+<!-- BUSINESS CONTACT BANNER -->
+<section id="biz-banner">
+  <div class="biz-inner">
+    <p class="biz-couple" id="biz-couple"></p>
+    <p class="biz-label">Website Designed By</p>
+    <p class="biz-name">Anjanadri Weddings</p>
+    <p class="biz-sub">Crafting beautiful, personalised wedding websites just like this one. Get in touch to create yours.</p>
+    <a class="biz-cta" href="https://wa.me/918431830982?text=Hi%2C%20I%20saw%20a%20wedding%20website%20you%20made%20and%20I%27d%20like%20to%20get%20one%20for%20my%20wedding%20too!" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4c-4.9 0-8.9 4-8.9 8.9 0 1.57.42 3.1 1.2 4.44L3 21l3.78-1.32a8.9 8.9 0 0 0 4.27 1.09h.01c4.9 0 8.9-4 8.9-8.9 0-2.38-.93-4.62-2.36-6.55zm-5.55 13.7h-.01a7.4 7.4 0 0 1-3.77-1.03l-.27-.16-2.8.98.94-2.73-.18-.28a7.38 7.38 0 0 1-1.13-3.93c0-4.08 3.32-7.4 7.4-7.4a7.36 7.36 0 0 1 5.24 2.17 7.36 7.36 0 0 1 2.17 5.24c0 4.08-3.32 7.4-7.4 7.4zm4.06-5.54c-.22-.11-1.31-.65-1.51-.72-.2-.07-.35-.11-.5.11s-.57.72-.7.87-.26.17-.48.06a6.05 6.05 0 0 1-3-2.62c-.23-.39.23-.36.65-1.2.07-.15.04-.28-.02-.39s-.5-1.2-.68-1.64c-.18-.43-.36-.37-.5-.38h-.43a.82.82 0 0 0-.6.28 2.5 2.5 0 0 0-.78 1.86c0 1.1.8 2.16.91 2.31.11.15 1.57 2.4 3.8 3.36.53.23.94.36 1.26.47.53.17 1.01.14 1.39.09.42-.06 1.31-.54 1.5-1.06.18-.52.18-.96.13-1.06-.05-.1-.2-.16-.42-.27z"/></svg>
+      WhatsApp: 8431830982
+    </a>
+  </div>
+</section>
+
 <footer>
   <p class="ft-names" id="ft-names"></p>
   <p class="ft-date"  id="ft-date"></p>
@@ -714,15 +815,64 @@ const WEDDING = {
     (W.rsvp.maxGuestOptions||[]).forEach(opt => { const o=document.createElement('option'); o.textContent=opt; $('f-guests').appendChild(o); });
     (W.events||[]).forEach(ev => { const o=document.createElement('option'); o.textContent=ev.name+' ('+ev.date+')'; $('f-events').appendChild(o); });
     (W.rsvp.dietOptions||[]).forEach(opt => { const o=document.createElement('option'); o.textContent=opt; $('f-diet').appendChild(o); });
+
     $('rsvpForm').addEventListener('submit', async e => {
       e.preventDefault();
-      if (W.rsvp.formspreeEndpoint) {
-        const fd=new FormData(e.target);
-        fd.append('groom',W.groom.name); fd.append('bride',W.bride.name);
-        await fetch(W.rsvp.formspreeEndpoint,{method:'POST',body:fd,headers:{Accept:'application/json'}});
+
+      const submitBtn = e.target.querySelector('.btn-submit');
+      const originalText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.textContent = 'Sending…'; submitBtn.disabled = true; }
+
+      const payload = {
+        name:    $('f-name').value,
+        email:   $('f-email').value,
+        phone:   $('f-phone').value,
+        attending: document.querySelector('input[name="att"]:checked').value,
+        guests:  $('f-guests').value,
+        events:  $('f-events').value,
+        diet:    $('f-diet').value,
+        message: $('f-msg').value,
+        groom:   W.groom.name,
+        bride:   W.bride.name,
+        submittedAt: new Date().toISOString()
+      };
+
+      let sentOk = true;
+
+      try {
+        if (W.rsvp.googleSheetUrl) {
+          // Google Apps Script Web Apps require no-cors from the browser;
+          // we can't read the response, so we optimistically assume success
+          // if the request doesn't throw.
+          await fetch(W.rsvp.googleSheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } else if (W.rsvp.formspreeEndpoint) {
+          const fd = new FormData(e.target);
+          fd.append('groom', W.groom.name);
+          fd.append('bride', W.bride.name);
+          const res = await fetch(W.rsvp.formspreeEndpoint, { method:'POST', body:fd, headers:{ Accept:'application/json' } });
+          sentOk = res.ok;
+        } else {
+          // No destination configured at all — data goes nowhere.
+          console.warn('No googleSheetUrl or formspreeEndpoint set — RSVP was not saved anywhere.');
+        }
+      } catch (err) {
+        sentOk = false;
+        console.error('RSVP submission failed:', err);
       }
-      $('rsvpForm').style.display='none';
-      $('rsvp-ok').style.display='block';
+
+      if (submitBtn) { submitBtn.textContent = originalText; submitBtn.disabled = false; }
+
+      if (sentOk) {
+        $('rsvpForm').style.display = 'none';
+        $('rsvp-ok').style.display  = 'block';
+      } else {
+        alert('Something went wrong sending your RSVP. Please try again, or message us directly on WhatsApp.');
+      }
     });
 
     /* VENUES */
@@ -756,6 +906,12 @@ const WEDDING = {
       $('venue-panels').appendChild(panel);
     });
 
+    /* BUSINESS BANNER — couple names line, built from config */
+    const bizCoupleEl = $('biz-couple');
+    if (bizCoupleEl) {
+      bizCoupleEl.innerHTML = '<b>' + g0 + ' & ' + b0 + '</b> — ' + (dateLabel || 'Wedding Website');
+    }
+
     /* FOOTER */
     $('ft-names').textContent = g0 + ' & ' + b0;
     $('ft-date').textContent  = dateLabel ? dateLabel + ' · Forever Begins Here' : '';
@@ -769,44 +925,57 @@ const WEDDING = {
     const navLnk = $('navLinks');
 
     function onScroll() {
-      navEl.classList.toggle('scrolled', window.scrollY > 60);
+      if (window.scrollY > 50) {
+        navEl.classList.add('scrolled');
+      } else {
+        navEl.classList.remove('scrolled');
+      }
     }
     window.addEventListener('scroll', onScroll, { passive:true });
-    onScroll(); // run once on load in case page is already scrolled
+    onScroll();
 
     /* ═══════════════════════════════════════════════════
-       HAMBURGER — toggle open/close
+       HAMBURGER — explicit open/close with inline-style
+       failsafe in case any CSS rule doesn't apply
        ═══════════════════════════════════════════════════ */
-    function closeMenu() {
-      burger.classList.remove('open');
-      navLnk.classList.remove('open');
-      burger.setAttribute('aria-expanded','false');
+    let menuOpen = false;
+
+    function openMenu() {
+      menuOpen = true;
+      burger.classList.add('open');
+      navLnk.classList.add('open');
+      navLnk.style.display = 'flex';
+      burger.setAttribute('aria-expanded', 'true');
     }
 
-    burger.addEventListener('click', () => {
-      const isOpen = navLnk.classList.contains('open');
-      if (isOpen) {
-        closeMenu();
-      } else {
-        burger.classList.add('open');
-        navLnk.classList.add('open');
-        burger.setAttribute('aria-expanded','true');
-      }
+    function closeMenu() {
+      menuOpen = false;
+      burger.classList.remove('open');
+      navLnk.classList.remove('open');
+      navLnk.style.display = '';
+      burger.setAttribute('aria-expanded', 'false');
+    }
+
+    burger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (menuOpen) { closeMenu(); } else { openMenu(); }
     });
 
-    // Close when any nav link is clicked
-    navLnk.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-
-    // Close when clicking outside the menu
-    document.addEventListener('click', e => {
-      if (navLnk.classList.contains('open') && !navEl.contains(e.target)) {
-        closeMenu();
-      }
+    navLnk.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeMenu);
     });
 
-    // Close on Escape key
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeMenu();
+    document.addEventListener('click', function (e) {
+      if (menuOpen && !navEl.contains(e.target)) closeMenu();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menuOpen) closeMenu();
+    });
+
+    // If the window is resized back to desktop width while menu is open, close it
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1024 && menuOpen) closeMenu();
     });
 
     /* SCROLL REVEAL */
