@@ -445,11 +445,25 @@ const WEDDING = {
   }
   .biz-cta svg { width: 16px; height: 16px; flex-shrink: 0; }
 
+  @media(max-width:1024px){
+    #biz-banner { padding: 12px 18px; }
+    .biz-inner { gap: 5px; }
+    .biz-couple { font-size: 11px; }
+    .biz-label { font-size: 9px; }
+    .biz-name { font-size: 16px; }
+    .biz-sub { font-size: 12px; line-height: 1.4; }
+    .biz-cta { padding: 9px 20px; font-size: 10px; margin-top: 2px; }
+  }
+
   @media(max-width:600px){
-    #biz-banner { padding: 14px 16px; }
-    .biz-couple { font-size: 10px; }
-    .biz-sub { font-size: 12.5px; }
-    .biz-cta { padding: 10px 20px; font-size: 10.5px; }
+    #biz-banner { padding: 10px 14px; }
+    .biz-inner { gap: 4px; }
+    .biz-couple { font-size: 10px; letter-spacing: .1em; }
+    .biz-label { display: none; }
+    .biz-name { font-size: 14px; }
+    .biz-sub { display: none; }
+    .biz-cta { padding: 8px 18px; font-size: 9.5px; margin-top: 4px; }
+    .biz-cta svg { width: 13px; height: 13px; }
   }
 
   /* FOOTER */
