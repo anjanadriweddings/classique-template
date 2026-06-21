@@ -834,7 +834,7 @@ const WEDDING = {
   <svg id="music-icon-off" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" opacity="0.9"/><line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2"/></svg>
   <svg id="music-icon-on" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
 </button>
-<audio id="bg-music" loop preload="none">
+<audio id="bg-music" loop preload="auto" playsinline>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
@@ -1368,7 +1368,11 @@ const WEDDING = {
       });
       bgMusic.addEventListener('error', () => {
         console.warn('Audio failed to load. Check the <source src="..."> path in the HTML — the file may be missing, misnamed, or the URL is wrong.');
+        if (musicBtn) musicBtn.title = 'Audio failed to load — check file path';
       });
+      // Trust the audio element's own events as the single source of truth
+      bgMusic.addEventListener('playing', () => { musicPlaying = true;  setMusicIcon(true);  });
+      bgMusic.addEventListener('pause',   () => { musicPlaying = false; setMusicIcon(false); });
     }
     function setMusicIcon(isPlaying) {
       if (!musicBtn) return;
@@ -1389,12 +1393,18 @@ const WEDDING = {
         // Auto-start music on open, most browsers allow this since it's a direct user gesture
         if (musicBtn && bgMusic && !musicPlaying) {
           bgMusic.volume = 0.35;
-          bgMusic.play().then(() => {
-            musicPlaying = true;
-            setMusicIcon(true);
-          }).catch(err => {
-            console.warn('Autoplay was blocked or the audio file could not be loaded. Tap the music icon manually to retry:', err);
-          });
+          bgMusic.muted = false;
+          const playPromise = bgMusic.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              musicPlaying = true;
+              setMusicIcon(true);
+            }).catch(err => {
+              console.warn('Autoplay was blocked or the audio file could not be loaded. Tap the music icon manually to retry:', err);
+              // TEMP VISIBLE DEBUG — remove once confirmed working
+              if (musicBtn) musicBtn.title = 'Autoplay blocked: ' + (err && err.name ? err.name : 'unknown');
+            });
+          }
         }
         setTimeout(() => {
           entryScreen.style.display = 'none';
