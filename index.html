@@ -185,6 +185,7 @@ const WEDDING = {
   #entry-screen {
     position: fixed; inset: 0; z-index: 1000;
     display: flex; align-items: center; justify-content: center;
+    padding-bottom: 8vh;
     background:
       radial-gradient(ellipse 90% 70% at 50% 30%, rgba(212,175,55,0.16) 0%, transparent 65%),
       linear-gradient(160deg, #1a1208 0%, #2d1f06 55%, #1a1208 100%);
@@ -376,15 +377,15 @@ const WEDDING = {
   }
 
   /* ═══════════════════════════════════════════════════
-     AMBIENT MUSIC TOGGLE — floating note, bottom-right
+     AMBIENT MUSIC TOGGLE — floating note, top-right
      ═══════════════════════════════════════════════════ */
   #music-toggle {
     position: fixed;
-    bottom: 24px; right: 20px;
-    z-index: 240;
-    width: 48px; height: 48px;
+    top: 18px; right: 20px;
+    z-index: 260;
+    width: 40px; height: 40px;
     border-radius: 50%;
-    background: rgba(26,18,8,0.7);
+    background: rgba(26,18,8,0.65);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(212,175,55,0.45);
@@ -400,7 +401,7 @@ const WEDDING = {
     border-color: var(--gold);
     transform: scale(1.08);
   }
-  #music-toggle svg { width: 19px; height: 19px; color: var(--gold-pale); transition: color 0.3s; }
+  #music-toggle svg { width: 16px; height: 16px; color: var(--gold-pale); transition: color 0.3s; }
   #music-toggle.playing svg { color: var(--gold); }
 
   /* Spinning vinyl ring when playing */
@@ -416,8 +417,8 @@ const WEDDING = {
   @keyframes spinSlow { to { transform: rotate(360deg); } }
 
   @media(max-width:600px){
-    #music-toggle { width:42px; height:42px; bottom:18px; right:16px; }
-    #music-toggle svg { width:17px; height:17px; }
+    #music-toggle { width:36px; height:36px; top:14px; right:16px; }
+    #music-toggle svg { width:14px; height:14px; }
   }
 
   body { font-family:var(--ff-b); background:var(--ivory); color:var(--ink); overflow-x:hidden; }
@@ -834,7 +835,7 @@ const WEDDING = {
   <svg id="music-icon-on" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
 </button>
 <audio id="bg-music" loop preload="none">
-  <source src="grand_project-romantic-italian-melody-amore-al-mare-love-at-the-sea-501525.mp3" type="audio/mpeg">
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <!-- LIGHTBOX -->
