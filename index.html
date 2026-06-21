@@ -835,7 +835,7 @@ const WEDDING = {
   <svg id="music-icon-on" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
 </button>
 <audio id="bg-music" loop preload="none">
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_d1718ab41b.mp3" type="audio/mpeg">
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <!-- LIGHTBOX -->
@@ -1352,18 +1352,29 @@ const WEDDING = {
       musicBtn.addEventListener('click', () => {
         if (musicPlaying) {
           bgMusic.pause();
-          musicBtn.classList.remove('playing');
-          iconOff.style.display = '';
-          iconOn.style.display  = 'none';
+          setMusicIcon(false);
+          musicPlaying = false;
         } else {
           bgMusic.volume = 0.35;
-          bgMusic.play().catch(() => {});
-          musicBtn.classList.add('playing');
-          iconOff.style.display = 'none';
-          iconOn.style.display  = '';
+          bgMusic.play().then(() => {
+            setMusicIcon(true);
+            musicPlaying = true;
+          }).catch(err => {
+            console.warn('Music failed to play — check that the audio file path/URL is correct and reachable:', err);
+            setMusicIcon(false);
+            musicPlaying = false;
+          });
         }
-        musicPlaying = !musicPlaying;
       });
+      bgMusic.addEventListener('error', () => {
+        console.warn('Audio failed to load. Check the <source src="..."> path in the HTML — the file may be missing, misnamed, or the URL is wrong.');
+      });
+    }
+    function setMusicIcon(isPlaying) {
+      if (!musicBtn) return;
+      musicBtn.classList.toggle('playing', isPlaying);
+      iconOff.style.display = isPlaying ? 'none' : '';
+      iconOn.style.display  = isPlaying ? '' : 'none';
     }
 
     /* ═══════════════════════════════════════════════════
@@ -1380,10 +1391,10 @@ const WEDDING = {
           bgMusic.volume = 0.35;
           bgMusic.play().then(() => {
             musicPlaying = true;
-            musicBtn.classList.add('playing');
-            iconOff.style.display = 'none';
-            iconOn.style.display  = '';
-          }).catch(() => { /* autoplay blocked, user can tap the music icon manually */ });
+            setMusicIcon(true);
+          }).catch(err => {
+            console.warn('Autoplay was blocked or the audio file could not be loaded. Tap the music icon manually to retry:', err);
+          });
         }
         setTimeout(() => {
           entryScreen.style.display = 'none';
