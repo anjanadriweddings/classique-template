@@ -13,7 +13,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script>
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║          ✏️  YOUR WEDDING CONFIG — EDIT ONLY THIS SECTION       ║
+   ║                                                                  ║
+   ║  ⚠️  THREE RULES TO AVOID BREAKING THE PAGE:                    ║
+   ║  1. Every line needs a comma at the end EXCEPT the last line    ║
+   ║     before a closing }                                          ║
+   ║  2. Always wrap text in "double quotes"                         ║
+   ║  3. mapEmbed = ONLY the URL, NOT the full <iframe> tag          ║
+   ║                                                                  ║
+   ║  📸 PHOTO SIZES FOR BEST RESULTS:                               ║
+   ║  • Couple avatars  → 400×400 px  (square, will be cropped      ║
+   ║                       to circle)                                ║
+   ║  • Gallery photo 1 → 900×540 px  (large featured, landscape)   ║
+   ║  • Gallery photos  → 400×270 px  (small tiles, landscape)      ║
+   ║  • All photos: JPEG, max 500 KB each for fast loading           ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
 const WEDDING = {
+  /* ── 1. COUPLE ──────────────────────────────────────────────── */
   groom: {
     name:       "Rakesh",
     src:        "Groom.jpg",
@@ -24,7 +42,7 @@ const WEDDING = {
     parents:    "Ramesh & Sunita Sharma"
   },
   bride: {
-    name:       "Priyanka",
+    name:       "Priyank",
     src:        "Bride.jpg",
     emoji:      "👰🏽",
     hometown:   "Delhi, NCR",
@@ -32,11 +50,13 @@ const WEDDING = {
     bio:        "Born into a family of artists, Priyank brings colour and warmth to every room she enters. Her grace and creativity make every moment she's part of truly unforgettable.",
     parents:    "Vikram & Anita Kapoor"
   },
+  /* ── 2. WEDDING DATE & KEY INFO ─────────────────────────────── */
   weddingDate:   "2026-07-03T11:00:00+05:30",
   rsvpDeadline:  "3 June 2026",
-  hashtag:       "#RakeshWedsPriyanka",
+  hashtag:       "#RakeshWedsPriyank",
   tagline:       "Two souls · One destiny · Infinite love",
   hindiBlessing: "शादी की शुभकामनाएं",
+  /* ── 3. EVENTS / TIMELINE ───────────────────────────────────── */
   events: [
     { icon:"🌼", name:"Haldi Ceremony",   date:"1 Jul · 10 AM", venue:"Kapoor Residence · Delhi",      desc:"A vibrant morning ritual where turmeric paste brings blessings of radiance and prosperity to the couple." },
     { icon:"💃", name:"Sangeet Night",    date:"1 Jul · 6 PM",  venue:"Bangalore Patidar Samaj",       desc:"An evening of music, dance, and laughter as both families celebrate with performances and Bollywood numbers." },
@@ -44,6 +64,9 @@ const WEDDING = {
     { icon:"🪷", name:"Wedding Ceremony", date:"3 Jul · 11 AM", venue:"Bangalore Patidar Samaj",       desc:"The sacred Saat Pheras — seven vows taken around the holy fire — unite the couple as husband and wife." },
     { icon:"🥂", name:"Wedding Reception",date:"3 Jul · 7 PM",  venue:"Bangalore Patidar Samaj",       desc:"A grand evening reception — exquisite dinner, joyous dancing, and memories that last a lifetime." }
   ],
+  /* ── 4. PHOTO GALLERY ───────────────────────────────────────── */
+  /* src = filename in same folder as this HTML file               */
+  /* set src: null to use emoji placeholder instead                */
   photos: [
     { src:"photo1.jpg", emoji:"🥰", label:"Our First Date"   },
     { src:"photo2.jpg", emoji:"🌅", label:"Sunrise Together" },
@@ -51,6 +74,7 @@ const WEDDING = {
     { src:"photo4.jpg", emoji:"🌸", label:"Cherry Blossoms"  },
     { src:"photo5.jpg", emoji:"🏔️", label:"Mountain Escape"  }
   ],
+  /* ── 5. VENUES & GOOGLE MAPS ────────────────────────────────── */
   venues: [
     {
       tabLabel:"Wedding Ceremony", name:"Bangalore Patidar Samaj",
@@ -65,14 +89,19 @@ const WEDDING = {
       mapEmbed:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15547.235639201906!2d77.49714546501512!3d13.047832196391917!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae3cd3d5232efb%3A0xf86b1d539349a1ec!2sBangalore%20Patidar%20Samaj!5e0!3m2!1sen!2sin!4v1781841356265!5m2!1sen!2sin"
     }
   ],
+  /* ── 6. RSVP SETTINGS ───────────────────────────────────────── */
   rsvp: {
     maxGuestOptions: ["Just me","2 guests","3 guests","4 guests","5 or more"],
     dietOptions:     ["No restrictions","Vegetarian","Vegan","Jain Vegetarian","Halal","Gluten-free"],
     googleSheetUrl:  null,
     formspreeEndpoint: "https://formspree.io/f/xvzjpvnz"
   },
+  /* ── 7. LOVE STORY QUOTE ─────────────────────────────────────── */
   quote: "We met by chance, fell in love by choice, and choose to spend forever together by the grace of destiny."
 };
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║        🚫 STOP HERE — DO NOT EDIT ANYTHING BELOW THIS LINE     ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
 </script>
 
 <style>
